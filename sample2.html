@@ -1,0 +1,391 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Pie Chart SVG</title>  
+ 
+<link rel="stylesheet" href="js/jquery-ui.css" />
+
+<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui.js"></script>
+<script type="text/javascript" src="js/raphael.js"></script>
+
+<script type="text/javascript">
+/*Developed by Md Aslam */
+/*used for tooltip layout */
+$(function() {
+    $( document ).tooltip({
+      track: true
+    });
+  });
+    
+/* data for outer pie */
+  var  person_name="Example 2";
+  
+  var data=['D'];
+  var color=['#CCCCCC','#FF0033','#BA7486'];
+  var sdata=[
+        {
+	    subtype:'D',
+		subcata:['Item1','Item2','Item3','Item4','Item5'],
+		subvalue:[2,3],
+		questions:['Which city\nwhere you born?','What fruits \nyou like?','What is \nyour age?','How much do you\n like Sharukh Khan on \na scale of 10?','What languages \ndo you speak?'],
+		subinnerdata:[{
+		answers:['Kolkata', 'Madras', 'Delhi', 'Jaipur', 'Kanpur', 'Kashmir'],
+
+		subcolor:['#EC9F9F'],
+		selectedcolor:['#E37171'],
+		selected_options:['null', 'null', 'null', 'Jaipur', 'null', 'null' ]
+
+	 	},
+		{
+		answers:['Apple', 'Mango', 'Grapes', 'Banana', 'Pineapple'],
+	
+		subcolor:['#6FB980'],
+		selectedcolor:['#56AD69'],
+		selected_options:['null', 'Mango', 'null', 'null', 'Pineapple']
+
+	 	}
+		,
+		{
+		answers:['26'],	
+		subcolor:['#CFC0F8'],
+		selectedcolor:['#AF96F3'],
+		selected_options:['26']
+	 	},
+		{
+		answers:['7/10'],	
+		subcolor:['#ECAD88'],
+		selectedcolor:['#E79767'],
+		selected_options:['7/10']
+	 	}
+		,
+		{
+		answers:['Bengali', 'Hindi', 'English', 'Oriya', 'Assamese', 'Chinese'],	
+
+		subcolor:['#B9CBF9'],
+		selectedcolor:['#82A2F4'],
+		selected_options:['Bengali', 'null', 'null', 'Oriya', 'null', 'Chinese']
+
+	 	}]
+		}]
+		
+		
+
+ /*data for inner pie */
+  var idata=['A','B','C','D'];
+  var icolor=['#33CCCC','#FFCC66','#F49893','#FADBBE'];
+   var isdata=[{
+	    isubtype:'A',
+		isubcata:['Item1','Item2','Item3','Item4','Item5','Item6','Item7','Item8','Item9','Item10','Item11','Item12','Item13','Item14','Item15','Item16','Item17','Item18','Item19','Item20','Item21','Item22','Item23'],
+		ipointvalue:[2,1,5,6,9,10,2,6,7,3,4,2,6,7,3,1,1,8,5,6,4,5,1]
+	 	},
+		{
+	    isubtype:'B',
+		isubcata:['Item1','Item2','Item3','Item4','Item5','Item6','Item7','Item8','Item9','Item10'],
+		ipointvalue:[4,5,8,1,4,3,2,1,5,10]
+	 	},
+		{
+	    isubtype:'C',
+		isubcata:['Item1','Item2','Item3','Item4','Item5','Item6','Item7','Item8'],
+		ipointvalue:[4,5,8,1,4,3,2,1]
+		}]
+
+ 
+function mydata()
+{
+
+paper = Raphael("cygnus_infomedia");
+var midX=500;
+var midY=300; 
+
+/* value for outer pie */
+var st=en=rd=x=y=tmp=0;
+var x1=y1=x2=y2=x3=y3=x4=y4=xt=yt=hr=ha=0;
+var r=240; //adjust radius of outer pie
+var ir=135; //adjust  radius of inner pie
+var mid_r=55; //adjust radius of middle circle where name is print
+var last_circle_radius=50;
+var outer_radius_length=r-ir;
+rd = (2*Math.PI)/data.length;
+var stst=[];
+var enen=[];
+var stp=[];
+for(var i=0;i<data.length;i++)
+{
+
+if(data[i]==sdata[i].subtype)
+{
+if(sdata[i].subcata!="")
+{
+for (var k=0;k<sdata[i].subcata.length;k++)
+{
+var slices=rd/(sdata[i].subcata.length);
+en=st+slices;
+
+var midr=(slices/2);
+var cen=st+midr;
+
+x1 = parseInt(midX + r*Math.cos(st));
+y1 = parseInt(midY + r*Math.sin(st));
+
+x2 = parseInt(midX + r*Math.cos(en));
+y2 = parseInt(midY + r*Math.sin(en));
+
+var d = "M"+midX+ ","+midY  + " L" + x1 + "," + y1 + "  A"+r+","+r+" 0 0,1 " + x2 + "," + y2 + " z"; //1 means clockwise
+arc = paper.path(d);
+arc.attr("fill",color[i]);
+arc.attr("stroke", "white");
+arc.attr("stroke-width", 2);
+arc.attr("title", "Section : "+sdata[i].subcata[k]+"\nValue : "+sdata[i].subvalue[k]);
+
+var typ=(todegree(st)-(57));/* rotating text of arc */
+var tym=(todegree(en)+(57));/* rotating text of arc */
+/*start multiple arc creation*/
+for(var j=0;j<sdata[i].subinnerdata[k].answers.length;j++)
+{
+//alert(sdata[i].subinnerdata[k].answers[j]);
+var outer_seg_div=(outer_radius_length/sdata[i].subinnerdata[k].answers.length);
+
+var midv=(outer_seg_div/2);
+
+xt=(midX+(r-j*outer_seg_div-midv)*Math.cos(cen));
+yt=(midY+(r-j*outer_seg_div-midv)*Math.sin(cen));
+	
+x3=(midX+(r-j*outer_seg_div)*Math.cos(st));
+y3=(midY+(r-j*outer_seg_div)*Math.sin(st));
+
+x4=(midX+(r-j*outer_seg_div)*Math.cos(en));
+y4=(midY+(r-j*outer_seg_div)*Math.sin(en));	
+
+var dd="M "+midX+","+midY+" L"+x3+","+y3+" A "+(r-j*outer_seg_div)+","+(r-j*outer_seg_div)+" 0 0, 1 "+x4+" ,"+y4+"z";
+var arc1=paper.path(dd);
+arc1.attr("stroke", "white");
+arc1.attr("stroke-width", 2);
+
+arc1.attr("title", "Value : "+sdata[i].subinnerdata[k].answers[j]);
+
+//var tx=paper.text(xt,yt,sdata[i].subinnerdata[k].answers[j]);
+if(sdata[i].subinnerdata[k].answers[j]==sdata[i].subinnerdata[k].selected_options[j])
+{
+//tx.attr({ "font-size": 12, "font-family": "Arial, Helvetica, sans-serif","fill": "white","font-weight": "bold"});
+arc1.attr("fill",  sdata[i].subinnerdata[k].selectedcolor[0]);	
+}
+else
+{
+arc1.attr("fill", sdata[i].subinnerdata[k].subcolor[0]);	
+//tx.attr({ "font-size": 12, "font-family": "Arial, Helvetica, sans-serif","fill": "black","font-weight": "bold"});	
+}
+
+/*
+if(todegree(st)<180)
+{
+tx.rotate(typ);
+}
+if(todegree(en) >180)
+{
+tx.rotate(tym);
+}*/
+
+}
+/*end multiple arc creation*/
+qxt=(midX+(r+20)*Math.cos(cen));
+qyt=(midY+(r+20)*Math.sin(cen));
+
+var question_print=paper.text(qxt,qyt,sdata[i].questions[k]);
+question_print.attr({ "font-size": 11, "font-family": "Arial, Helvetica, sans-serif","fill": "green"});
+
+if(todegree(st)<140)
+{
+question_print.rotate(typ);
+}
+if(todegree(en) >180)
+{
+question_print.rotate(tym);
+}
+st=st+slices;
+stp.push(st);
+}
+stst.push(st);
+enen.push(en);
+} 
+} 
+} 
+
+
+
+var Out_circle_bor = paper.circle(midX, midY, r); 
+    Out_circle_bor.attr("stroke", "#FFCC33");
+	Out_circle_bor.attr("stroke-width", 4);
+	
+var Out_circle_bor_last = paper.circle(midX, midY, r+last_circle_radius); 
+    Out_circle_bor_last.attr("stroke", "#FFCC33");
+	Out_circle_bor_last.attr("stroke-width", 4);
+
+
+/*start border on outer circle */
+
+for(pk=0;pk<stp.length;pk++)
+{
+
+pxi1 = parseInt(midX + (r+last_circle_radius)*Math.cos(stp[pk]));
+pyi1 = parseInt(midY + (r+last_circle_radius)*Math.sin(stp[pk]));
+
+var dm1 = "M"+midX+ ","+midY  + " L" + pxi1 + "," + pyi1 + "  A"+(r+last_circle_radius)+","+(r+last_circle_radius)+" 0 0,1 " + pxi1 + "," + pyi1 + " z"; //1 means clockwise
+arc_border_line = paper.path(dm1);
+arc_border_line.attr('stroke', '#62AEB7');
+arc_border_line.attr('stroke-width', 3);
+//alert(pk)
+}
+
+for(hk=0;hk<stst.length;hk++)
+{
+
+px1 = parseInt(midX + (r+last_circle_radius)*Math.cos(stst[hk]));
+py1 = parseInt(midY + (r+last_circle_radius)*Math.sin(stst[hk]));
+
+px2 = parseInt(midX + (r+last_circle_radius)*Math.cos(enen[hk]));
+py2 = parseInt(midY + (r+last_circle_radius)*Math.sin(enen[hk]));
+
+var dm = "M"+midX+ ","+midY  + " L" + px1 + "," + py1 + "  A"+(r+last_circle_radius)+","+(r+last_circle_radius)+" 0 0,1 " + px2 + "," + py2 + " z"; //1 means clockwise
+arc_border = paper.path(dm);
+arc_border.attr("stroke", "#FFCC33");
+arc_border.attr("stroke-width", 4);
+}
+/*end border on outer circle */
+
+
+	
+
+/*value for inner pie */
+var ist=ien=ird=ix=iy=itmp=0;
+var xx1=yy1=xx2=yy2=0;
+var dt=[];	
+var dot=[];
+var total_arcs_number=0;
+ird = (2*Math.PI)/isdata.length;
+var dot_item_name=[];
+var itValue	=" - Value : " /* put text which you want to see on inner pie on dot  */
+var plus=0; 
+
+/* if section more than 1 for dot positioning */
+if(isdata.length>1)
+{
+plus=1;	
+}
+else
+{
+plus=0;	
+}
+
+
+/*calculation of dot position */	
+var dotUnit=(ir-mid_r)/10; 
+
+/*start calculating equi distant angle of inner pie */
+
+for(var ht=0;ht<isdata.length;ht++)
+{
+total_arcs_number=total_arcs_number+isdata[ht].isubcata.length+plus; 
+//alert(isdata[ht].isubcata.length+1);
+}
+var islices=(2*Math.PI)/total_arcs_number;
+
+/*end calculating equi distant angle of inner pie */
+
+for(var i=0;i<isdata.length;i++)
+{
+if(idata[i]==isdata[i].isubtype)
+{
+if(isdata[i].isubcata!="")
+{
+for (var k=0;k<isdata[i].isubcata.length+plus;k++)
+{
+//var islices=ird/(isdata[i].isubcata.length);
+ien=ist+islices;
+xx1 = parseInt(midX + ir*Math.cos(ist));
+yy1 = parseInt(midY + ir*Math.sin(ist));
+xx2 = parseInt(midX + ir*Math.cos(ien));
+yy2 = parseInt(midY + ir*Math.sin(ien));
+var dd = "M"+midX+ ","+midY  + " L" + xx1 + "," + yy1 + "  A"+ir+","+ir+" 0 0,1 " + xx2 + "," + yy2 + " z"; //1 means clockwise
+arc = paper.path(dd);
+arc.attr("fill",icolor[i]);
+arc.attr("stroke", "white");
+arc.attr("stroke-width", 2);
+//arc.attr("title","Inner Section :"+isdata[i].isubcata[k]+"\nValue :"+isdata[i].isubvalue[k] );
+if(isdata[i].ipointvalue[k]!="")
+{
+dt.push(isdata[i].ipointvalue[k]);
+dot_item_name.push(isdata[i].isubcata[k]);
+}
+ist=ist+islices;
+dot.push(ist);
+}
+} 
+}
+}
+
+/*middle circle on pie*/
+var mid_circle = paper.circle(midX, midY, mid_r); 
+    mid_circle.attr("fill", "#0033CC");
+	mid_circle.attr("stroke", "#663399");
+	mid_circle.attr("stroke-width", 3);
+	mid_circle.glow({opacity: 1.0, color: "#fff", width: 10});
+	
+/*person name related with data drawn on pie*/
+var pnameH=paper.text(midX,midY-12,"3DCP\nof\n");
+    pnameH.attr({ "font-size": 22, "font-family": "Arial, Helvetica, sans-serif","fill": "white","font-weight": "bold"});
+
+var pname=paper.text(midX,midY+25,person_name);
+    pname.attr({ "font-size": 13, "font-family": "Arial, Helvetica, sans-serif","fill": "white","font-weight": "bold"});
+	
+/*border on inner circle*/
+var inner_circle_bor = paper.circle(midX, midY, ir); 
+    inner_circle_bor.attr("stroke", "#990000");
+	inner_circle_bor.attr("stroke-width", 4);
+	inner_circle_bor.glow({opacity: 1.0, color: "#fff", width: 10}); 
+
+
+/*generating dot on line */
+var xx=yy=0;
+for(var j=0;j<dot.length;j++)
+{
+if(typeof dt[j]!="undefined")
+{
+ xx=midX+(mid_r+dotUnit*dt[j])*Math.cos(dot[j]);
+ yy=midY+(mid_r+dotUnit*dt[j])*Math.sin(dot[j]);	
+ var circle = paper.circle(xx, yy, 5); 
+    circle.attr("stroke", "#CC00CC");
+    circle.attr("stroke-width", 1);
+    circle.attr("fill", "#FFFF00");
+	circle.attr("title", dot_item_name[j]+itValue+dt[j]);
+	
+}
+}
+}
+
+/*converting radians to degree */
+function todegree(radians)
+{
+  return radians * 180 / Math.PI;
+}
+
+
+</script>
+</head>
+<body onLoad="mydata();" >
+<table width="214" border="0">
+  <tr>
+    <td>&nbsp; </td>
+   
+  </tr>
+</table>
+
+<div id="cygnus_infomedia" align="center" style="width:1000px;height:590px;">
+
+</div>
+
+</body>
+</html>
+
